@@ -1,5 +1,6 @@
 package airport.model;
 
+import airport.dto.DadosCadastroAeroporto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,27 +19,25 @@ public class Aeroporto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(name = "nome_aeroporto")
+    private long id_aeroporto;
     private String nomeAeroporto;
-
-    @Column(name = "codigo_iata")
     private String codigoIata;
-
-    @Column(name = "cidade")
     private String cidade;
-
-    @Column(name = "codigo_pais_iso")
     private String codigoPaisIso;
-
-    @Column(name = "latitude")
     private BigDecimal latitude;
-
-    @Column(name = "longitude")
     private BigDecimal longitude;
-
-    @Column(name = "altitude")
     private BigDecimal altitude;
+
+    public Aeroporto (DadosCadastroAeroporto dados){
+
+        this.nomeAeroporto = dados.nomeAeroporto();
+        this.codigoIata = dados.codigoIata();
+        this.cidade = dados.cidade();
+        this.codigoPaisIso=dados.codigoPaisIso();
+        this.latitude = dados.latitude();
+        this.longitude = dados.longitude();
+        this.altitude = dados.altitude();
+
+    }
 
 }
