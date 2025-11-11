@@ -54,4 +54,14 @@ public class AeroportoController {
 
     }
 
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Aeroporto> editarAeroporto(@PathVariable Long id, @RequestBody DadosCadastroAeroporto dados){
+
+        Aeroporto aeroportoAtualizado = service.editarAeroporto(id, dados);
+
+        return ResponseEntity.ok(aeroportoAtualizado);
+
+    }
+
 }

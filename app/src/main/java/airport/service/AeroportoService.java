@@ -32,4 +32,11 @@ public class AeroportoService {
         return aeroporto;
     }
 
+    public Aeroporto editarAeroporto(Long id, DadosCadastroAeroporto dados){
+        var aeroporto = repository.getReferenceById(id);
+        aeroporto.atualizarInformacoes(dados);
+
+        return aeroporto;
+    }
+
 }

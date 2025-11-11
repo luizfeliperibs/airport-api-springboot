@@ -40,4 +40,35 @@ public class Aeroporto {
 
     }
 
+    public void atualizarInformacoes(DadosCadastroAeroporto dados) {
+
+        if(dados.nomeAeroporto() != null){
+            this.nomeAeroporto = dados.nomeAeroporto();
+        }
+
+        if(dados.codigoIata() != null){
+            this.codigoIata = dados.codigoIata();
+        }
+
+        if(dados.cidade() != null){
+            this.cidade = dados.cidade();
+        }
+
+        if(dados.codigoPaisIso() != null){
+            this.codigoPaisIso = dados.codigoPaisIso();
+        }
+
+        if(dados.latitude() != null){
+            this.latitude = dados.latitude();
+        }
+
+        if(dados.longitude() != null){
+            this.longitude = dados.longitude();
+        }
+
+        if(dados.altitude() != null){
+            this.altitude = dados.altitude();
+        }
+
+    }
 }
