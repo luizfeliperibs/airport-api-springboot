@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/aeroportos")
@@ -25,6 +26,20 @@ public class AeroportoController {
     @GetMapping
     public List<Aeroporto> listarAeroportos() {
         return service.listarAeroportos();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Aeroporto> buscarPorId(@PathVariable Long id) {
+
+        Optional<Aeroporto> aeroportoOptional = service.buscarAeroportoById(id);
+
+        if (aeroportoOptional.isPresent()) {
+            Aeroporto aeroportoEncontrado = aeroportoOptional.get();
+            return ResponseEntity.ok(aeroportoEncontrado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @PostMapping
