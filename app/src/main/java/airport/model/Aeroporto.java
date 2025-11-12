@@ -1,5 +1,6 @@
 package airport.model;
 
+import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ public class Aeroporto {
 
     }
 
-    public void atualizarInformacoes(DadosCadastroAeroporto dados) {
+    public void atualizarInformacoes(DadosAtualizacaoAeroporto dados) {
 
         if(dados.nomeAeroporto() != null){
             this.nomeAeroporto = dados.nomeAeroporto();

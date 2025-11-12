@@ -1,6 +1,8 @@
 package airport.controller;
 
+import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
+import airport.dto.DadosDetalhamentoAeroporto;
 import airport.model.Aeroporto;
 import airport.repository.AeroportoRepository;
 import airport.service.AeroportoService;
@@ -56,12 +58,20 @@ public class AeroportoController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Aeroporto> editarAeroporto(@PathVariable Long id, @RequestBody DadosCadastroAeroporto dados){
+    public ResponseEntity<DadosDetalhamentoAeroporto> editarAeroporto(@PathVariable Long id, @RequestBody DadosAtualizacaoAeroporto dados){
 
         Aeroporto aeroportoAtualizado = service.editarAeroporto(id, dados);
+        var dto = new DadosDetalhamentoAeroporto(aeroportoAtualizado);
+        return ResponseEntity.ok(dto);
 
-        return ResponseEntity.ok(aeroportoAtualizado);
+    }
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Aeroporto> excluirAeroporto(@PathVariable Long id) {
+        service.excluirAeroporto(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

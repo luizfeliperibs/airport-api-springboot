@@ -1,5 +1,6 @@
 package airport.service;
 
+import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import airport.model.Aeroporto;
 import airport.repository.AeroportoRepository;
@@ -32,11 +33,15 @@ public class AeroportoService {
         return aeroporto;
     }
 
-    public Aeroporto editarAeroporto(Long id, DadosCadastroAeroporto dados){
-        var aeroporto = repository.getReferenceById(id);
+    public Aeroporto editarAeroporto(Long id, DadosAtualizacaoAeroporto dados){
+        Aeroporto aeroporto = repository.getReferenceById(id);
         aeroporto.atualizarInformacoes(dados);
 
         return aeroporto;
+    }
+
+    public void excluirAeroporto(Long id){
+        repository.deleteById(id);
     }
 
 }
