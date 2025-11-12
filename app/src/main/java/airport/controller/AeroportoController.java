@@ -4,74 +4,88 @@ import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import airport.dto.DadosDetalhamentoAeroporto;
 import airport.model.Aeroporto;
-import airport.repository.AeroportoRepository;
 import airport.service.AeroportoService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/aeroportos")
 public class AeroportoController {
 
-    @Autowired
-    AeroportoService service;
+    private final AeroportoService service;
 
-    @GetMapping
-    public List<Aeroporto> listarAeroportos() {
-        return service.listarAeroportos();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Aeroporto> buscarPorId(@PathVariable Long id) {
-
-        Optional<Aeroporto> aeroportoOptional = service.buscarAeroportoById(id);
-
-        if (aeroportoOptional.isPresent()) {
-            Aeroporto aeroportoEncontrado = aeroportoOptional.get();
-            return ResponseEntity.ok(aeroportoEncontrado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
+    public AeroportoController(AeroportoService service) {
+        this.service = service;
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Aeroporto> cadastrarAeroporto(@RequestBody @Valid DadosCadastroAeroporto dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoAeroporto> cadastrarAeroporto(
+            @RequestBody @Valid DadosCadastroAeroporto dados,
+            UriComponentsBuilder uriBuilder) {
 
-        Aeroporto novoAeroporto = service.cadastrarAeroporto(dados);
+        Aeroporto aeroportoSalvo = service.cadastrarAeroporto(dados);
 
-        var uri = uriBuilder.path("aeroportos/{id}").buildAndExpand(novoAeroporto.getId_aeroporto()).toUri();
+        // URI agora é baseada no IATA
+        var uri = uriBuilder.path("/aeroportos/{iata}")
+                .buildAndExpand(aeroportoSalvo.getCodigoIata())
+                .toUri();
 
-        return ResponseEntity.created(uri).body(novoAeroporto);
-
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoAeroporto(aeroportoSalvo));
     }
 
-    @PutMapping("/{id}")
-    @Transactional
-    public ResponseEntity<DadosDetalhamentoAeroporto> editarAeroporto(@PathVariable Long id, @RequestBody DadosAtualizacaoAeroporto dados){
+    @GetMapping
+    public ResponseEntity<List<DadosDetalhamentoAeroporto>> listar() {
+        List<Aeroporto> listaAeroportos = service.listarAeroportos();
+        List<DadosDetalhamentoAeroporto> listaDto = listaAeroportos.stream()
+                .map(DadosDetalhamentoAeroporto::new)
+                .collect(Collectors.toList());
 
-        Aeroporto aeroportoAtualizado = service.editarAeroporto(id, dados);
-        var dto = new DadosDetalhamentoAeroporto(aeroportoAtualizado);
-        return ResponseEntity.ok(dto);
-
+        return ResponseEntity.ok(listaDto);
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/{iata}")
+    public ResponseEntity<DadosDetalhamentoAeroporto> detalhar(@PathVariable String iata) {
+        Optional<Aeroporto> aeroportoOpt = service.buscarAeroportoByIata(iata);
+
+        if (aeroportoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new DadosDetalhamentoAeroporto(aeroportoOpt.get()));
+    }
+
+    @PutMapping("/{iata}")
     @Transactional
-    public ResponseEntity<Aeroporto> excluirAeroporto(@PathVariable Long id) {
-        service.excluirAeroporto(id);
+    public ResponseEntity<DadosDetalhamentoAeroporto> atualizar(
+            @PathVariable String iata,
+            @RequestBody @Valid DadosAtualizacaoAeroporto dados) {
+
+        Aeroporto aeroportoAtualizado = service.editarAeroporto(iata, dados);
+
+        if (aeroportoAtualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new DadosDetalhamentoAeroporto(aeroportoAtualizado));
+    }
+
+    @DeleteMapping("/{iata}")
+    @Transactional
+    public ResponseEntity<Void> excluir(@PathVariable String iata) {
+        boolean sucesso = service.excluirAeroporto(iata);
+
+        if (!sucesso) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.noContent().build();
     }
-
 }

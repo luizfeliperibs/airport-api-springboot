@@ -13,6 +13,7 @@ public record DadosCadastroAeroporto(
         @NotBlank(message = "O nome do aeroporto é obrigatório.")
         String nomeAeroporto,
 
+        @NotNull
         @Size(min = 3, max = 3, message = "O código IATA deve ter exatamente 3 caracteres.")
         @Pattern(regexp = "[A-Z]{3}", message = "O código IATA deve conter apenas letras maiúsculas.")
         String codigoIata,

@@ -4,8 +4,8 @@ import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import airport.model.Aeroporto;
 import airport.repository.AeroportoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,35 +13,50 @@ import java.util.Optional;
 @Service
 public class AeroportoService {
 
-    @Autowired
-    AeroportoRepository repository;
+    private final AeroportoRepository repository;
 
-    public AeroportoService(AeroportoRepository repository) {}
+    public AeroportoService(AeroportoRepository repository) {
+        this.repository = repository;
+    }
 
     public List<Aeroporto> listarAeroportos() {
         return repository.findAll();
     }
 
-    public Optional<Aeroporto> buscarAeroportoById(Long id) {
-        return repository.findById(id);
+    public Optional<Aeroporto> buscarAeroportoByIata(String iata) {
+        return repository.findByCodigoIata(iata);
     }
 
+    @Transactional
     public Aeroporto cadastrarAeroporto(DadosCadastroAeroporto dados) {
+
+        if(repository.existsByCodigoIata(dados.codigoIata())) {
+            throw new IllegalArgumentException("Código IATA já cadastrado.");
+        }
         var aeroporto = new Aeroporto(dados);
         repository.save(aeroporto);
-
         return aeroporto;
     }
 
-    public Aeroporto editarAeroporto(Long id, DadosAtualizacaoAeroporto dados){
-        Aeroporto aeroporto = repository.getReferenceById(id);
+    @Transactional
+    public Aeroporto editarAeroporto(String iata, DadosAtualizacaoAeroporto dados){
+
+        Optional<Aeroporto> aeroportoOpt = repository.findByCodigoIata(iata);
+        if (aeroportoOpt.isEmpty()) {
+            return null;
+        }
+
+        Aeroporto aeroporto = aeroportoOpt.get();
         aeroporto.atualizarInformacoes(dados);
-
         return aeroporto;
     }
 
-    public void excluirAeroporto(Long id){
-        repository.deleteById(id);
+    @Transactional
+    public boolean excluirAeroporto(String iata){
+        if (repository.existsByCodigoIata(iata)) {
+            repository.deleteByCodigoIata(iata);
+            return true;
+        }
+        return false;
     }
-
 }
