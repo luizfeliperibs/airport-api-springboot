@@ -3,7 +3,7 @@ package airport.service;
 import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import airport.model.Aeroporto;
-import airport.model.AeroportoNaoEncontradoException;
+import airport.exceptions.AeroportoNaoEncontradoException;
 import airport.repository.AeroportoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
