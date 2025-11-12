@@ -3,7 +3,9 @@ package airport.service;
 import airport.dto.DadosAtualizacaoAeroporto;
 import airport.dto.DadosCadastroAeroporto;
 import airport.model.Aeroporto;
+import airport.model.AeroportoNaoEncontradoException;
 import airport.repository.AeroportoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,8 @@ import java.util.Optional;
 @Service
 public class AeroportoService {
 
-    private final AeroportoRepository repository;
+    @Autowired
+    AeroportoRepository repository;
 
     public AeroportoService(AeroportoRepository repository) {
         this.repository = repository;
@@ -23,8 +26,12 @@ public class AeroportoService {
         return repository.findAll();
     }
 
-    public Optional<Aeroporto> buscarAeroportoByIata(String iata) {
-        return repository.findByCodigoIata(iata);
+    public Aeroporto buscarAeroportoByIata(String iata) {
+
+        return repository.findByCodigoIata(iata)
+                .orElseThrow(() -> new AeroportoNaoEncontradoException(
+                        "Aeroporto com IATA '" + iata + "' não encontrado."
+                ));
     }
 
     @Transactional
@@ -51,12 +58,16 @@ public class AeroportoService {
         return aeroporto;
     }
 
+    // Em AeroportoService.java
     @Transactional
-    public boolean excluirAeroporto(String iata){
-        if (repository.existsByCodigoIata(iata)) {
-            repository.deleteByCodigoIata(iata);
-            return true;
+    public void excluirAeroporto(String iata){
+
+        if (!repository.existsByCodigoIata(iata)) {
+            throw new AeroportoNaoEncontradoException(
+                    "Aeroporto com IATA '" + iata + "' não encontrado para exclusão."
+            );
         }
-        return false;
+
+        repository.deleteByCodigoIata(iata);
     }
 }

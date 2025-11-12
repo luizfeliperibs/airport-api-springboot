@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,13 +52,10 @@ public class AeroportoController {
 
     @GetMapping("/{iata}")
     public ResponseEntity<DadosDetalhamentoAeroporto> detalhar(@PathVariable String iata) {
-        Optional<Aeroporto> aeroportoOpt = service.buscarAeroportoByIata(iata);
 
-        if (aeroportoOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        Aeroporto aeroporto = service.buscarAeroportoByIata(iata);
+        return ResponseEntity.ok(new DadosDetalhamentoAeroporto(aeroporto));
 
-        return ResponseEntity.ok(new DadosDetalhamentoAeroporto(aeroportoOpt.get()));
     }
 
     @PutMapping("/{iata}")
@@ -70,22 +66,14 @@ public class AeroportoController {
 
         Aeroporto aeroportoAtualizado = service.editarAeroporto(iata, dados);
 
-        if (aeroportoAtualizado == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(new DadosDetalhamentoAeroporto(aeroportoAtualizado));
     }
 
+    // Em AeroportoController.java
     @DeleteMapping("/{iata}")
     @Transactional
     public ResponseEntity<Void> excluir(@PathVariable String iata) {
-        boolean sucesso = service.excluirAeroporto(iata);
-
-        if (!sucesso) {
-            return ResponseEntity.notFound().build();
-        }
-
+        service.excluirAeroporto(iata);
         return ResponseEntity.noContent().build();
     }
 }
