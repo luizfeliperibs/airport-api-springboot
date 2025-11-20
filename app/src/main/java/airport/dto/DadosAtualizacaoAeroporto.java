@@ -13,4 +13,5 @@ public record DadosAtualizacaoAeroporto(
         Double longitude,
         Double altitude
 ) {
+
 }

@@ -74,6 +74,45 @@ class AeroportoControllerIT {
                 .andExpect(jsonPath("$[1].codigoIata").value("GIG"));
     }
 
+    @Test
+    @DisplayName("Deve detalhar um aeroporto específico (Status 200)")
+    void deveDetalharAeroporto() throws Exception {
+
+        criarAeroportoNoBanco("SDU", "Santos Dumont");
+
+        mockMvc.perform(get("/aeroportos/{iata}", "SDU"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.codigoIata").value("SDU"))
+                .andExpect(jsonPath("$.nomeAeroporto").value("Santos Dumont"));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar aeroporto (Status 200)")
+    void deveAtualizarAeroporto() throws Exception {
+
+        criarAeroportoNoBanco("VCP", "Viracopos Antigo");
+
+        var dadosAtualizacao = new DadosAtualizacaoAeroporto(
+                "Viracopos Atualizado",
+                "VCP",
+                "Campinas",
+                "BR",
+                0.0,
+                0.0,
+                0.0
+        );
+        var json = objectMapper.writeValueAsString(dadosAtualizacao);
+
+        mockMvc.perform(put("/aeroportos/{iata}", "VCP")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nomeAeroporto").value("Viracopos Atualizado"));
+
+        Aeroporto aeroportoNoBanco = repository.findByCodigoIata("VCP").orElseThrow();
+        assertThat(aeroportoNoBanco.getNomeAeroporto()).isEqualTo("Viracopos Atualizado");
+    }
+
     private void criarAeroportoNoBanco(String iata, String nome) {
         var dados = new DadosCadastroAeroporto(
                 nome, iata, "Cidade Teste", "BR", 0.0, 0.0, 0.0
