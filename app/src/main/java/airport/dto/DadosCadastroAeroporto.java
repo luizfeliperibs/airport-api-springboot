@@ -1,12 +1,9 @@
 package airport.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.math.BigDecimal;
 
 public record DadosCadastroAeroporto(
 
@@ -26,13 +23,11 @@ public record DadosCadastroAeroporto(
         @Pattern(regexp = "[A-Z]{2}", message = "O código do país deve conter apenas letras maiúsculas.")
         String codigoPaisIso,
 
-        @NotNull(message = "A latitude é obrigatória.")
-        BigDecimal latitude,
+        Double latitude,
 
-        @NotNull(message = "A longitude é obrigatória.")
-        BigDecimal longitude,
+        Double longitude,
 
-        BigDecimal altitude
+        Double altitude
 
 ){
 }

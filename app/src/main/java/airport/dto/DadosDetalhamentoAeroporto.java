@@ -9,9 +9,9 @@ public record DadosDetalhamentoAeroporto(
         String codigoIata,
         String cidade,
         String codigoPaisIso,
-        BigDecimal latitude,
-        BigDecimal longitude,
-        BigDecimal altitude
+        Double latitude,
+        Double longitude,
+        Double altitude
 ) {
     public DadosDetalhamentoAeroporto(Aeroporto aeroporto) {
         this(

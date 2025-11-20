@@ -25,9 +25,9 @@ public class Aeroporto {
     private String codigoIata;
     private String cidade;
     private String codigoPaisIso;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-    private BigDecimal altitude;
+    private Double latitude;
+    private Double longitude;
+    private Double altitude;
 
     public Aeroporto (DadosCadastroAeroporto dados){
 
