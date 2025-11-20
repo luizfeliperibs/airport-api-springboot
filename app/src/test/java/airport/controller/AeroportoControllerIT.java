@@ -59,6 +59,26 @@ class AeroportoControllerIT {
         assertThat(repository.existsByCodigoIata("CNF")).isTrue();
     }
 
+    @Test
+    @DisplayName("Deve listar aeroportos (Status 200)")
+    void deveListarAeroportos() throws Exception {
 
+        criarAeroportoNoBanco("GRU", "Guarulhos");
+        criarAeroportoNoBanco("GIG", "Galeão");
+
+        mockMvc.perform(get("/aeroportos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].codigoIata").value("GRU"))
+                .andExpect(jsonPath("$[1].codigoIata").value("GIG"));
+    }
+
+    private void criarAeroportoNoBanco(String iata, String nome) {
+        var dados = new DadosCadastroAeroporto(
+                nome, iata, "Cidade Teste", "BR", 0.0, 0.0, 0.0
+        );
+        repository.save(new Aeroporto(dados));
+    }
 
 }
