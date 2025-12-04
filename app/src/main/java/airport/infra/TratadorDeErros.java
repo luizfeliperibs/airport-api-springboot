@@ -54,4 +54,6 @@ public class TratadorDeErros extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+
+
 }

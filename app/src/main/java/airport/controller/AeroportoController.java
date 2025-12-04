@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/aeroportos")
+@RequestMapping("/api/v1/aeroportos")
 public class AeroportoController {
 
     private final AeroportoService service;
@@ -32,7 +32,6 @@ public class AeroportoController {
 
         Aeroporto aeroportoSalvo = service.cadastrarAeroporto(dados);
 
-        // URI agora é baseada no IATA
         var uri = uriBuilder.path("/aeroportos/{iata}")
                 .buildAndExpand(aeroportoSalvo.getCodigoIata())
                 .toUri();
